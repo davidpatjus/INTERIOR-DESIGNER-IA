@@ -1,4 +1,4 @@
-import { UserDetail } from './user';
+import { UserDetail } from './User';
 
 export interface UserDetailContextProps {
   userDetail: UserDetail;

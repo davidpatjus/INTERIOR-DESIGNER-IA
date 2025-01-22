@@ -1,6 +1,6 @@
 import { createContext } from 'react';
-import { UserDetailContextProps } from '@/app/_interfaces/userContext';
-import { UserDetail } from '@/app/_interfaces/user';
+import { UserDetailContextProps } from '@/app/_interfaces/UserContext';
+import { UserDetail } from '@/app/_interfaces/User';
 
 const defaultUserDetail: UserDetail = {
   id: '',
