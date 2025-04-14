@@ -17,7 +17,7 @@ function Header() {
 					<h2 className='sm:text-lg md:text-xl font-bold'>IA Diseñador De Interiores</h2>
 				</div>
 
-				<Button variant="ghost" className='hidden md:flex rounded-full text-primary border-2 text-lg border-black p-5 font-semibold'>Conseguir Creditos</Button>
+				<Button variant="ghost" className='hidden md:flex rounded-full text-primary border-2 text-lg border-black p-5 font-semibold -translate-x-16'>Conseguir Creditos</Button>
 				<div className='flex gap-5 items-center'>
 					<div className='flex gap-2 p-1 items-center bg-slate-200 px-3 md:px-5 rounded-full'>
 						<Image src={'/estrella.png'} width={30} height={30} alt='Credits Icon' />

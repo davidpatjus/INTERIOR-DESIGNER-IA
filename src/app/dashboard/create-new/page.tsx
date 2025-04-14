@@ -1,62 +1,149 @@
 "use client";
-import React, { useEffect, useState } from 'react'
-import ImageSelectionSection from './_components/ImageSelectionSection';
-import RoomType from './_components/RoomType';
-import DesignType from './_components/DesignType';
-import AdditionalReq from './_components/AdditionalReq';
-import { Button } from '@/components/ui/button';
+import React, { useState } from "react";
+import ImageSelectionSection from "./_components/ImageSelectionSection";
+import RoomType from "./_components/RoomType";
+import DesignType from "./_components/DesignType";
+import AdditionalReq from "./_components/AdditionalReq";
+import { Button } from "@/components/ui/button";
+import { supabase } from "@/config/SupabaseConfig";
+import axios from "axios";
+import { useUser } from "@clerk/nextjs";
+import CustomLoading from "./_components/CustomLoading";
 
 function CreateNew() {
 
-  const [formData, setFormData]=useState([  ]);
+  const { user } = useUser();
 
-  const onHandleInputChange = (value, fieldName) => {
-    setFormData(prev=>({
+  const [formData, setFormData] = useState<any>({});
+
+  const [loading, setLoading] = useState(false);
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [outputResult, setOutputResult] = useState<any>();
+
+  const onHandleInputChange = (value: any, fieldName: string) => {
+    setFormData((prev: any) => ({
       ...prev,
-      [fieldName]: value
-    }))
-  }
-  
-  // Para depuración (ver cambios en formData)
-  useEffect(() => {
-    console.log("formData actualizado:", formData);
-  }, [formData]);
+      [fieldName]: value,
+    }));
+  };
+
+  const uploadImageToSupabase = async (file: File) => {
+    try {
+      const fileName = `${Date.now()}_${file.name}`;
+      const { error } = await supabase.storage
+        .from("InteriorDesignerBucket") 
+        .upload(fileName, file);
+
+      if (error) {
+        console.error("Error subiendo la imagen:", error.message);
+        throw new Error("No se pudo subir la imagen a Supabase.");
+      }
+
+      // Obtén la URL pública de la imagen
+      const { data: publicUrlData } = supabase.storage
+      .from("InteriorDesignerBucket")
+      .getPublicUrl(fileName);
+
+      if (!publicUrlData) {
+        throw new Error("No se pudo obtener la URL pública de la imagen.");
+      }
+
+      return publicUrlData.publicUrl;
+    } catch (error) {
+      console.error("Error:", error);
+      return null;
+    }
+  };
+
+  const GenerateAiImage = async () => {
+    setLoading(true);
+    try {
+      // Subir imagen a Supabase
+      if (formData.image) {
+        const imageUrl = await uploadImageToSupabase(formData.image);
+      
+        if (!imageUrl) {
+          alert("No se pudo procesar la imagen. Inténtalo nuevamente.");
+          return;
+        }
+
+        // Añadir la URL de la imagen al objeto formData
+        const updatedFormData = {
+          ...formData,
+          imageUrl,
+          userEmail: user?.primaryEmailAddress?.emailAddress,
+        };
+
+        // Enviar formData al backend
+        const result = await axios.post("/api/redesign-room", updatedFormData);
+        console.log("Resultado del backend:", result.data);
+        setOutputResult(result.data.result); // will change
+        setLoading(false);
+      } else {
+        alert("Selecciona una imagen antes de continuar.");
+        setLoading(false);
+      }
+      
+    } catch (error) {
+      console.error("Error:", error);
+      setLoading(false);
+    }
+  };
 
   return (
     <div>
-      
       {/* Primary Section */}
-      <h2 className='font-bold text-4xl text-primary text-center'>Experimenta la magia de la remodelación con IA</h2>
-      <p className='text-center text-gray-500'>Transforme cualquier habitación con un clic. Selecciona un espacio, elige un estilo y observa cómo la IA reimagina tu entorno al instante.</p>
+      <h2 className="font-bold text-4xl text-primary text-center">
+        Experimenta la magia de la remodelación con IA
+      </h2>
+      <p className="text-center text-gray-500">
+        Transforme cualquier habitación con un clic. Selecciona un espacio,
+        elige un estilo y observa cómo la IA reimagina tu entorno al instante.
+      </p>
 
       {/* Grid Section */}
-      <div className='grid grid-cols-1 md:grid-cols-2 mt-10 gap-10'>
-
+      <div className="grid grid-cols-1 md:grid-cols-2 mt-10 gap-10">
         {/* Image Selection */}
-        <ImageSelectionSection selectedImage={(value) => onHandleInputChange(value, 'image')} />
+        <ImageSelectionSection
+          selectedImage={(value: any) => onHandleInputChange(value, "image")}
+        />
 
         {/* Form Input Section */}
         <div>
-
           {/* Room Type */}
-          <RoomType selectedRoomType={(value)=> onHandleInputChange(value, 'roomType')} />
+          <RoomType
+            selectedRoomType={(value: any) => onHandleInputChange(value, "roomType")}
+          />
 
           {/* Design Type */}
-          <DesignType selectedDesignType={(value)=> onHandleInputChange(value, 'designType')} />
+          <DesignType
+            selectedDesignType={(value: any) =>
+              onHandleInputChange(value, "designType")
+            }
+          />
 
           {/* Additional Requeriment TextArea (Optional) */}
-          <AdditionalReq selectedAdditionalReq={(value)=> onHandleInputChange(value, 'additionalReq')} />
+          <AdditionalReq
+            selectedAdditionalReq={(value: any) =>
+              onHandleInputChange(value, "additionalReq")
+            }
+          />
 
           {/* Button to Generate Image */}
-          <Button className='w-full mt-5'>Generar</Button>
-          <p className='text-sm text-gray-400 mb-20 mt-1'>NOTA: Se usara 1 credito por cada generación</p>
+          <Button className="w-full mt-5" onClick={GenerateAiImage}>
+            Generar
+          </Button>
 
+          {/* Note */}
+          <p className="text-sm text-gray-400 mb-20 mt-1">
+            NOTA: Se usara 1 credito por cada generación
+          </p>
         </div>
-
       </div>
-
+      <CustomLoading loading={loading} />
     </div>
-  )
+  );
 }
 
 export default CreateNew;
