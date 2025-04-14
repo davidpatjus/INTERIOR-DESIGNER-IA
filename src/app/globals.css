@@ -2,6 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
+.before-after-slider img {
+  height: 400px !important;
+  max-height: 400px;
+}
+
 /* :root {
   --background: #ffffff;
   --foreground: #171717;

@@ -9,6 +9,7 @@ import { supabase } from "@/config/SupabaseConfig";
 import axios from "axios";
 import { useUser } from "@clerk/nextjs";
 import CustomLoading from "./_components/CustomLoading";
+import AiOutputDialog from "../_components/AiOutputDialog";
 
 function CreateNew() {
 
@@ -18,8 +19,11 @@ function CreateNew() {
 
   const [loading, setLoading] = useState(false);
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [outputResult, setOutputResult] = useState<any>();
+  const [aiOutput, setAiOutput] = useState<any>();
+
+  const [orgImageUrl, setOrgImageUrl] = useState<any>();
+
+  const [openOutputDialog, setOpenOutputDialog] = useState(false);
 
   const onHandleInputChange = (value: any, fieldName: string) => {
     setFormData((prev: any) => ({
@@ -68,6 +72,8 @@ function CreateNew() {
           return;
         }
 
+        setOrgImageUrl(imageUrl);
+
         // Añadir la URL de la imagen al objeto formData
         const updatedFormData = {
           ...formData,
@@ -78,8 +84,9 @@ function CreateNew() {
         // Enviar formData al backend
         const result = await axios.post("/api/redesign-room", updatedFormData);
         console.log("Resultado del backend:", result.data);
-        setOutputResult(result.data.result); // will change
+        setAiOutput(result.data.result); // output image url
         setLoading(false);
+        setOpenOutputDialog(true);
       } else {
         alert("Selecciona una imagen antes de continuar.");
         setLoading(false);
@@ -142,6 +149,12 @@ function CreateNew() {
         </div>
       </div>
       <CustomLoading loading={loading} />
+      <AiOutputDialog 
+        aiImageUrl={aiOutput}
+        orgImageUrl={orgImageUrl}
+        openDialog={openOutputDialog} 
+        closeDialog={() => setOpenOutputDialog(false)} 
+      />
     </div>
   );
 }

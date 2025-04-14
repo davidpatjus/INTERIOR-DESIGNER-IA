@@ -91,7 +91,7 @@ export async function POST(req: NextRequest) {
     }).returning({ id: AiGeneratedImage.id });
     
     console.log("dbResult:", dbResult);
-    return NextResponse.json({ imageUrl, roomType, designType, additionalReq, output, result: dbResult[0] });
+    return NextResponse.json({ imageUrl, roomType, designType, additionalReq, output, result: publicImageUrl });
        
   } catch (error) {
     console.error("Error al procesar la solicitud:", error);

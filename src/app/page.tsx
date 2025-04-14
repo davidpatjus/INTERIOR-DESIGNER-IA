@@ -1,6 +1,6 @@
 import Image from 'next/image';
 // import HeroImage from '/HeroImage.avif'
-import { Wand2, Sparkles, PaintBucket, ChevronRight, Star } from 'lucide-react';
+import { Wand2, Sparkles, PaintBucket, ChevronRight } from 'lucide-react';
 
 export default function Home() {
   return (
@@ -128,7 +128,7 @@ export default function Home() {
   );
 }
 
-function FeatureCard({ icon, title, description }) {
+function FeatureCard({ icon, title, description }: { icon: React.ReactNode, title: string, description: string }) {
   return (
     <div className="bg-white p-8 rounded-xl shadow-sm hover:shadow-md transition-shadow">
       <div className="mb-4">{icon}</div>
@@ -138,7 +138,7 @@ function FeatureCard({ icon, title, description }) {
   );
 }
 
-function Step({ number, title, description }) {
+function Step({ number, title, description }: { number: number, title: string, description: string }) {
   return (
     <div className="text-center">
       <div className="w-12 h-12 bg-indigo-600 text-white rounded-full flex items-center justify-center text-xl font-bold mx-auto mb-4">
@@ -146,24 +146,6 @@ function Step({ number, title, description }) {
       </div>
       <h3 className="text-xl font-bold mb-3">{title}</h3>
       <p className="text-gray-600">{description}</p>
-    </div>
-  );
-}
-
-
-function Testimonial({ text, author, role }) {
-  return (
-    <div className="bg-white p-8 rounded-xl shadow-sm">
-      <div className="flex gap-1 mb-4">
-        {[...Array(5)].map((_, i) => (
-          <Star key={i} className="w-5 h-5 text-yellow-400 fill-current" />
-        ))}
-      </div>
-      <p className="text-gray-600 mb-4">{text}</p>
-      <div>
-        <p className="font-bold">{author}</p>
-        <p className="text-gray-500 text-sm">{role}</p>
-      </div>
     </div>
   );
 }
