@@ -11,6 +11,7 @@
   "dependencies": {
     "@clerk/nextjs": "^6.9.15",
     "@neondatabase/serverless": "^0.10.4",
+    "@paypal/react-paypal-js": "^8.8.3",
     "@radix-ui/react-alert-dialog": "^1.1.7",
     "@radix-ui/react-select": "^2.1.5",
     "@radix-ui/react-slot": "^1.2.0",

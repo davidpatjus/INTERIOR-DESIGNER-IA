@@ -37,6 +37,7 @@ function Listing() {
 
   return (
     <div>
+      
       {/* Hero section */}
       <div className="flex md:flex-row flex-col gap-5 items-center justify-between">
         <h2 className="font-bold text-3xl">
@@ -51,7 +52,7 @@ function Listing() {
       {userRoomList.length === 0 ?
         <EmptyState />
         : 
-        <div className="mt-6">
+        <div className="mt-6 mb-20">
           <h2 className="font-medium text-primary text-xl mb-10">Estudio de Habitaciones IA</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
             {userRoomList.map((room,index) => (
@@ -62,6 +63,7 @@ function Listing() {
             ))}
           </div>
         </div>}
+
     </div>
   );
 }

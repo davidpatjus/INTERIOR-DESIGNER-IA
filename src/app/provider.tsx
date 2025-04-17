@@ -1,7 +1,8 @@
 "use client"
 import React, { useEffect, useState } from 'react';
 import { UserDetailContext } from './_context/UserDetailContext';
-import { UserDetail } from './_interfaces/user';
+import { PayPalScriptProvider } from "@paypal/react-paypal-js";
+import { UserDetail } from './_interfaces/User';
 import { useUser } from '@clerk/nextjs';
 import axios from 'axios';
 
@@ -31,9 +32,11 @@ function Provider({ children }: { children: React.ReactNode }) {
 
   return (
     <UserDetailContext.Provider value={{userDetail, setUserDetail}}>
-    <div>
-      {children}
-    </div>
+      <PayPalScriptProvider options={{ clientId: process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID || '' }}>
+        <div>
+          {children}
+        </div>
+      </PayPalScriptProvider>
     </UserDetailContext.Provider>
   );
 }

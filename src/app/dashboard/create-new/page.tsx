@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import ImageSelectionSection from "./_components/ImageSelectionSection";
 import RoomType from "./_components/RoomType";
 import DesignType from "./_components/DesignType";
@@ -10,6 +10,9 @@ import axios from "axios";
 import { useUser } from "@clerk/nextjs";
 import CustomLoading from "./_components/CustomLoading";
 import AiOutputDialog from "../_components/AiOutputDialog";
+import { UserDetailContext } from "@/app/_context/UserDetailContext";
+import { Users } from "@/db/schema";
+import { db } from "@/db";
 
 function CreateNew() {
 
@@ -24,6 +27,8 @@ function CreateNew() {
   const [orgImageUrl, setOrgImageUrl] = useState<any>();
 
   const [openOutputDialog, setOpenOutputDialog] = useState(false);
+
+  const { userDetail, setUserDetail } = useContext(UserDetailContext)
 
   const onHandleInputChange = (value: any, fieldName: string) => {
     setFormData((prev: any) => ({
@@ -60,6 +65,24 @@ function CreateNew() {
     }
   };
 
+  const updateUserCredits = async () => {
+    try {
+      const result = await db.update(Users).set({
+        credits: userDetail?.credits - 1
+      }).returning({ id: Users.id})
+
+      if (result) {
+        setUserDetail(prev => ({
+          ...prev,
+          credits: prev.credits - 1
+        }))
+        return result[0].id
+      }
+      
+    } catch (error) {
+      console.log(error)
+    }
+  }
   const GenerateAiImage = async () => {
     setLoading(true);
     try {
@@ -85,6 +108,7 @@ function CreateNew() {
         const result = await axios.post("/api/redesign-room", updatedFormData);
         console.log("Resultado del backend:", result.data);
         setAiOutput(result.data.result); // output image url
+        await updateUserCredits()
         setLoading(false);
         setOpenOutputDialog(true);
       } else {

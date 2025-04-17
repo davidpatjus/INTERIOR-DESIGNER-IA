@@ -1,6 +1,7 @@
 import Image from 'next/image';
 // import HeroImage from '/HeroImage.avif'
 import { Wand2, Sparkles, PaintBucket, ChevronRight } from 'lucide-react';
+import Link from 'next/link';
 
 export default function Home() {
   return (
@@ -80,9 +81,11 @@ export default function Home() {
           <p className="text-xl text-indigo-100 mb-8 max-w-2xl mx-auto">
             Únete a miles de personas que ya han renovado sus espacios con nuestra tecnología de IA
           </p>
-          <button className="bg-white text-indigo-600 px-8 py-4 rounded-lg text-lg font-semibold hover:bg-indigo-50 transition-all">
-            Pruébalo gratis
-          </button>
+          <Link href={"/dashboard"}>
+            <button className="bg-white text-indigo-600 px-8 py-4 rounded-lg text-lg font-semibold hover:bg-indigo-50 transition-all">
+              Pruébalo gratis
+            </button>
+          </Link>
         </div>
       </section>
 

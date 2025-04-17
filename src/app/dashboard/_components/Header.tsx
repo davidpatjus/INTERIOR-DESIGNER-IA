@@ -21,12 +21,14 @@ function Header() {
           </div>
         </Link>
 
-        <Button
-          variant="ghost"
-          className="hidden md:flex rounded-full text-primary border-2 text-lg border-black p-5 font-semibold -translate-x-16"
+        <Link href={"/dashboard/buy-credits"}>
+          <Button
+            variant="ghost"
+            className="hidden md:flex rounded-full text-primary border-2 text-lg border-black p-5 font-semibold -translate-x-16"
         >
-          Conseguir Creditos
-        </Button>
+            Conseguir Creditos
+          </Button>
+        </Link>
         <div className="flex gap-5 items-center">
           <div className="flex gap-2 p-1 items-center bg-slate-200 px-3 md:px-5 rounded-full">
             <Image
