@@ -5,7 +5,6 @@ import RoomType from "./_components/RoomType";
 import DesignType from "./_components/DesignType";
 import AdditionalReq from "./_components/AdditionalReq";
 import { Button } from "@/components/ui/button";
-import { supabase } from "@/config/SupabaseConfig";
 import axios from "axios";
 import { useUser } from "@clerk/nextjs";
 import CustomLoading from "./_components/CustomLoading";
@@ -37,33 +36,26 @@ function CreateNew() {
     }));
   };
 
-  const uploadImageToSupabase = async (file: File) => {
-    try {
-      const fileName = `${Date.now()}_${file.name}`;
-      const { error } = await supabase.storage
-        .from("InteriorDesignerBucket") 
-        .upload(fileName, file);
+const uploadImageToS3 = async (file: File) => {
+  try {
+    // 1. Pedir URL prefirmada al servidor
+    const { data } = await axios.post("/api/upload-url", {
+      fileName: file.name,
+      contentType: file.type,
+    });
 
-      if (error) {
-        console.error("Error subiendo la imagen:", error.message);
-        throw new Error("No se pudo subir la imagen a Supabase.");
-      }
+    // 2. Subir directo al bucket
+    await axios.put(data.uploadUrl, file, {
+      headers: { "Content-Type": file.type },
+    });
 
-      // Obtén la URL pública de la imagen
-      const { data: publicUrlData } = supabase.storage
-      .from("InteriorDesignerBucket")
-      .getPublicUrl(fileName);
-
-      if (!publicUrlData) {
-        throw new Error("No se pudo obtener la URL pública de la imagen.");
-      }
-
-      return publicUrlData.publicUrl;
-    } catch (error) {
-      console.error("Error:", error);
-      return null;
-    }
-  };
+    // 3. URL pública para guardar/usar
+    return data.publicUrl as string;
+  } catch (error) {
+    console.error("Error subiendo la imagen:", error);
+    return null;
+  }
+};
 
   const updateUserCredits = async () => {
     try {
@@ -86,10 +78,9 @@ function CreateNew() {
   const GenerateAiImage = async () => {
     setLoading(true);
     try {
-      // Subir imagen a Supabase
+      // Subir imagen a S3
       if (formData.image) {
-        const imageUrl = await uploadImageToSupabase(formData.image);
-      
+        const imageUrl = await uploadImageToS3(formData.image);      
         if (!imageUrl) {
           alert("No se pudo procesar la imagen. Inténtalo nuevamente.");
           return;
